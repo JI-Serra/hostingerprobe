@@ -1,0 +1,27 @@
+# Dependencies and generated Next.js output
+node_modules/
+.next/
+.codegraph/
+
+# Environment and runtime state
+.env*
+!.env.example
+.probe-state*/
+evidence/
+*.log
+*.pid
+*.tmp
+*.temp
+
+# Local data and test artifacts
+*.db
+*.sqlite
+*.sqlite3
+coverage/
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

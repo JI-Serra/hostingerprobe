@@ -1,0 +1,30 @@
+{
+  "name": "@metribar/hostinger-capability-probe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "next build && node scripts/copy-standalone-assets.mjs",
+    "start": "node .next/standalone/server.js",
+    "test:probe": "node --test test/probe-contract.test.mjs",
+    "migrate": "node scripts/migrate.mjs",
+    "scheduled": "node scripts/scheduled-check.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:corruption": "node scripts/corruption-smoke.mjs",
+    "audit:runbook": "node scripts/audit-runbook.mjs",
+    "audit:publication": "node scripts/audit-publication.mjs"
+  },
+  "dependencies": {
+    "mysql2": "3.23.2",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
+  }
+}

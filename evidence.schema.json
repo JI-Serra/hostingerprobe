@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metribar.local/schemas/hostinger-probe-evidence-1.0.json",
+  "title": "Hostinger qualification evidence",
+  "description": "An account-specific, secret-free record of the nine required hosting capability checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "account",
+    "deployment",
+    "capturedAt",
+    "operator",
+    "platformFacts",
+    "hostingConfiguration",
+    "restartObservation",
+    "schedulerConfiguration",
+    "checks",
+    "approval"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "evidenceId": { "type": "string", "format": "uuid" },
+    "account": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "product"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Non-secret account reference." },
+        "product": { "type": "string", "minLength": 1 }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "buildId", "temporaryUrl", "assignedPort"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "buildId": { "type": "string", "minLength": 1 },
+        "temporaryUrl": { "type": "string", "format": "uri", "minLength": 1 },
+        "assignedPort": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      }
+    },
+    "capturedAt": { "type": "string", "format": "date-time" },
+    "operator": { "type": "string", "minLength": 1 },
+    "platformFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeVersion", "databaseEngine", "databaseVersion", "databaseConnectionLimit"],
+      "properties": {
+        "nodeVersion": { "type": "string", "minLength": 1 },
+        "databaseEngine": { "type": "string", "minLength": 1 },
+        "databaseVersion": { "type": "string", "minLength": 1 },
+        "databaseConnectionLimit": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hostingConfiguration": { "$ref": "#/$defs/hostingConfiguration" },
+    "restartObservation": { "$ref": "#/$defs/restartObservation" },
+    "schedulerConfiguration": { "$ref": "#/$defs/schedulerConfiguration" },
+    "checks": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "$ref": "#/$defs/check" }
+    },
+    "approval": { "$ref": "#/$defs/approval" }
+  },
+  "$defs": {
+    "hostingConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeApplicationNavigation", "logsNavigation", "databaseNavigation", "schedulerNavigation", "applicationRoot", "selectedNodeVersion", "installCommand", "buildCommand", "startCommand", "portBehavior"],
+      "properties": {
+        "nodeApplicationNavigation": { "type": "string", "minLength": 1 },
+        "logsNavigation": { "type": "string", "minLength": 1 },
+        "databaseNavigation": { "type": "string", "minLength": 1 },
+        "schedulerNavigation": { "type": "string", "minLength": 1 },
+        "applicationRoot": { "type": "string", "minLength": 1 },
+        "selectedNodeVersion": { "type": "string", "minLength": 1 },
+        "installCommand": { "type": "string", "minLength": 1 },
+        "buildCommand": { "type": "string", "minLength": 1 },
+        "startCommand": { "type": "string", "minLength": 1 },
+        "portBehavior": { "type": "string", "minLength": 1 }
+      }
+    },
+    "restartObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["restartControl", "bootIdBefore", "bootIdAfter", "markerState"],
+      "properties": {
+        "restartControl": { "type": "string", "minLength": 1 },
+        "bootIdBefore": { "type": "string", "minLength": 1 },
+        "bootIdAfter": { "type": "string", "minLength": 1 },
+        "markerState": { "enum": ["valid", "missing"] }
+      }
+    },
+    "schedulerConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "schedule", "workingDirectory", "nodeRuntimeReference"],
+      "properties": {
+        "command": { "type": "string", "minLength": 1 },
+        "schedule": { "type": "string", "minLength": 1 },
+        "workingDirectory": { "type": "string", "minLength": 1 },
+        "nodeRuntimeReference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability", "expected", "observed", "status", "redactedLogRef", "checksum"],
+      "properties": {
+        "capability": {
+          "enum": [
+            "nextjs_ssr",
+            "server_action_or_api_route",
+            "node_runtime",
+            "environment_variables",
+            "logs",
+            "restart_and_filesystem",
+            "scheduled_commands",
+            "database_access",
+            "migration_execution"
+          ]
+        },
+        "expected": { "type": "string", "minLength": 1 },
+        "observed": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pass", "fail"] },
+        "redactedLogRef": { "type": "string", "minLength": 1 },
+        "checksum": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approver", "decision", "timestamp", "rationale"],
+      "properties": {
+        "approver": { "type": "string", "minLength": 1 },
+        "decision": { "enum": ["approved", "rejected"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
