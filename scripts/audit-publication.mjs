@@ -10,10 +10,10 @@ const candidates = listed.stdout.split(/\r?\n/).filter(Boolean).sort();
 const findings = [];
 const acknowledgedFindings = [];
 const expectedFindings = new Map([
-  ['lib/probe-database.mjs:credential-value', { count: 1, explanation: 'References an environment variable name; no credential value is committed.' }],
+  ['lib/probe-contract.mjs:credential-value', { count: 1, explanation: 'References an environment variable name; no credential value is committed.' }],
   ['verify.mjs:credential-value', { count: 1, explanation: 'Contains the redaction detector pattern; no credential value is committed.' }],
   ['verify.test.mjs:credential-value', { count: 4, explanation: 'Contains synthetic redaction test input; no credential value is committed.' }],
-  ['test/probe-contract.test.mjs:credential-value', { count: 4, explanation: 'Contains synthetic authorization test configuration; no credential value is committed.' }]
+  ['test/probe-contract.test.mjs:credential-value', { count: 8, explanation: 'Contains synthetic authorization and database test configuration; no credential value is committed.' }]
 ]);
 const signatureChecks = [
   { name: 'private-key', expression: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },

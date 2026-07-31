@@ -27,6 +27,8 @@ Hostinger must use the repository root as the application root:
 
 Set a strong `PROBE_ACCESS_TOKEN` only in Hostinger. Health remains public; every state, database, migration, and scheduled endpoint requires `Authorization: Bearer <token>`. The smoke command reads the token from its environment.
 
+Use `PROBE_MYSQL_SERVER`, `PROBE_MYSQL_TCP`, and `PROBE_MYSQL_SCHEMA` for the Hostinger database server, TCP port, and schema. `PROBE_DB_HOST`, `PROBE_DB_PORT`, and `PROBE_DB_NAME` remain supported only as local compatibility fallbacks. Database credentials continue to use only `PROBE_DB_USER` and `PROBE_DB_PASSWORD`.
+
 ## Evidence boundary
 
 Generated evidence, redacted logs, and runtime state are ignored by Git. The verifier requires evidence logs to be local files beneath `evidence/logs/` and validates their SHA-256 checksums.

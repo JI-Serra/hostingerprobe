@@ -8,6 +8,7 @@ import {
   createProbeObservation,
   databaseConfigurationStatus,
   isScheduledInvocationRecord,
+  resolveDatabaseConfiguration,
   safeCorrelationId,
   scheduledInvocationRecord
 } from '../lib/probe-contract.mjs';
@@ -40,8 +41,51 @@ test('records environment presence without revealing its value', () => {
   assert.doesNotMatch(JSON.stringify(observation), /actual-private-value/);
 });
 
-test('keeps database and migration checks pending until every disposable database value is configured', () => {
-  const pending = databaseConfigurationStatus({ PROBE_DB_HOST: 'localhost' });
+test('resolves the canonical Hostinger database environment names', () => {
+  const environment = {
+    PROBE_MYSQL_SERVER: 'localhost',
+    PROBE_MYSQL_TCP: '3306',
+    PROBE_MYSQL_SCHEMA: 'probe_schema',
+    PROBE_DB_USER: 'probe_user',
+    PROBE_DB_PASSWORD: 'replace-with-test-value'
+  };
+
+  assert.deepEqual(resolveDatabaseConfiguration(environment), {
+    host: 'localhost',
+    port: '3306',
+    database: 'probe_schema',
+    user: 'probe_user',
+    password: 'replace-with-test-value'
+  });
+  assert.deepEqual(databaseConfigurationStatus(environment), { configured: true, status: 'configured' });
+});
+
+test('retains the legacy local database environment names as fallback', () => {
+  const environment = {
+    PROBE_DB_HOST: '127.0.0.1',
+    PROBE_DB_PORT: '3307',
+    PROBE_DB_NAME: 'local_probe',
+    PROBE_DB_USER: 'local_user',
+    PROBE_DB_PASSWORD: 'replace-with-test-value'
+  };
+
+  assert.deepEqual(resolveDatabaseConfiguration(environment), {
+    host: '127.0.0.1',
+    port: '3307',
+    database: 'local_probe',
+    user: 'local_user',
+    password: 'replace-with-test-value'
+  });
+  assert.deepEqual(databaseConfigurationStatus(environment), { configured: true, status: 'configured' });
+});
+
+test('keeps mixed database configuration pending when any logical field is missing', () => {
+  const pending = databaseConfigurationStatus({
+    PROBE_MYSQL_SERVER: 'localhost',
+    PROBE_DB_PORT: '3306',
+    PROBE_MYSQL_SCHEMA: 'probe_schema',
+    PROBE_DB_USER: 'probe_user'
+  });
 
   assert.deepEqual(pending, { configured: false, status: 'pending' });
 });
