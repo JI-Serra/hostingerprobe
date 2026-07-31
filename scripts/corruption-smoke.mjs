@@ -1,11 +1,9 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { isAbsolute, join } from 'node:path';
+import { join } from 'node:path';
+import { resolveProbeStateDirectory } from '../lib/probe-state.mjs';
 
 const baseUrl = process.env.PROBE_SMOKE_URL ?? 'http://127.0.0.1:3100';
-const stateDirectory = process.env.PROBE_STATE_DIR;
-if (typeof stateDirectory !== 'string' || !isAbsolute(stateDirectory)) {
-  throw new Error('PROBE_STATE_DIR must be an absolute path for the corruption smoke test.');
-}
+const stateDirectory = resolveProbeStateDirectory();
 
 const statePath = join(stateDirectory, 'restart-filesystem.json');
 mkdirSync(stateDirectory, { recursive: true });

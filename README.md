@@ -27,7 +27,9 @@ Hostinger must use the repository root as the application root:
 
 Set a strong `PROBE_ACCESS_TOKEN` only in Hostinger. Health remains public; every state, database, migration, and scheduled endpoint requires `Authorization: Bearer <token>`. The smoke command reads the token from its environment.
 
-Use `PROBE_MYSQL_SERVER`, `PROBE_MYSQL_TCP`, and `PROBE_MYSQL_SCHEMA` for the Hostinger database server, TCP port, and schema. `PROBE_DB_HOST`, `PROBE_DB_PORT`, and `PROBE_DB_NAME` remain supported only as local compatibility fallbacks. Database credentials continue to use only `PROBE_DB_USER` and `PROBE_DB_PASSWORD`.
+Use `PROBE_MYSQL_SERVER`, `PROBE_MYSQL_TCP`, and `PROBE_MYSQL_SCHEMA_MANUAL` as the canonical Hostinger variables for the database server, TCP port, and schema. `PROBE_MYSQL_SCHEMA`, `PROBE_DB_HOST`, `PROBE_DB_PORT`, and `PROBE_DB_NAME` are local/backward-compatibility fallbacks only and are never Hostinger canonical. Database credentials continue to use only `PROBE_DB_USER` and `PROBE_DB_PASSWORD`.
+
+Use `PROBE_STATE_DIR_VERSION` as the canonical Hostinger variable for state storage. `PROBE_STATE_DIR` is a local/backward-compatibility fallback only and is never Hostinger canonical; when neither variable is configured, state falls back locally to `.probe-state`.
 
 ## Evidence boundary
 

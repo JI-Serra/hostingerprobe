@@ -45,7 +45,7 @@ test('resolves the canonical Hostinger database environment names', () => {
   const environment = {
     PROBE_MYSQL_SERVER: 'localhost',
     PROBE_MYSQL_TCP: '3306',
-    PROBE_MYSQL_SCHEMA: 'probe_schema',
+    PROBE_MYSQL_SCHEMA_MANUAL: 'probe_schema',
     PROBE_DB_USER: 'probe_user',
     PROBE_DB_PASSWORD: 'replace-with-test-value'
   };
@@ -58,6 +58,23 @@ test('resolves the canonical Hostinger database environment names', () => {
     password: 'replace-with-test-value'
   });
   assert.deepEqual(databaseConfigurationStatus(environment), { configured: true, status: 'configured' });
+});
+
+test('prefers canonical Hostinger names over local/backward-compatible fallbacks', () => {
+  const environment = {
+    PROBE_MYSQL_SCHEMA_MANUAL: 'new_schema',
+    PROBE_MYSQL_SCHEMA: 'previous_schema',
+    PROBE_DB_NAME: 'legacy_schema',
+    PROBE_STATE_DIR_VERSION: 'C:\\new-state',
+    PROBE_STATE_DIR: 'C:\\previous-state'
+  };
+
+  assert.equal(resolveDatabaseConfiguration(environment).database, 'new_schema');
+  assert.equal(resolveProbeStateDirectory(environment, 'C:\\local').toLowerCase(), 'c:\\new-state');
+});
+
+test('uses PROBE_MYSQL_SCHEMA as a local/backward-compatible fallback', () => {
+  assert.equal(resolveDatabaseConfiguration({ PROBE_MYSQL_SCHEMA: 'previous_schema' }).database, 'previous_schema');
 });
 
 test('retains the legacy local database environment names as fallback', () => {
@@ -83,7 +100,7 @@ test('keeps mixed database configuration pending when any logical field is missi
   const pending = databaseConfigurationStatus({
     PROBE_MYSQL_SERVER: 'localhost',
     PROBE_DB_PORT: '3306',
-    PROBE_MYSQL_SCHEMA: 'probe_schema',
+    PROBE_MYSQL_SCHEMA_MANUAL: 'probe_schema',
     PROBE_DB_USER: 'probe_user'
   });
 
@@ -98,7 +115,7 @@ test('creates a redacted scheduled invocation record', () => {
   assert.doesNotMatch(JSON.stringify(record), /private-value/);
 });
 
-test('uses an explicit absolute state directory shared by web and scheduled processes', () => {
+test('uses PROBE_STATE_DIR as a local/backward-compatible fallback', () => {
   const stateDirectory = resolveProbeStateDirectory(
     { PROBE_STATE_DIR: 'C:\\hostinger-probe-state' },
     'C:\\irrelevant-working-directory'
